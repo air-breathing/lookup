@@ -15,6 +15,7 @@ class Lookuper {
         this.isMixedConfigs = isMixedConfigs;
         this.fileType = parsingTypes[fileType.toUpperCase()];
         this.resultConfig = {};
+        this.shouldExit = false;
     }
 
     lookup(dir) {
@@ -33,7 +34,7 @@ class Lookuper {
             this._mixConfig(path.join(dir, this.configName));
         }
 
-        if (dir === os.homedir() || dir === '/' || !this.isMixedConfigs) {
+        if (dir === os.homedir() || dir === '/' || this.shouldExit) {
             return this.resultConfig;
         }
 
@@ -52,7 +53,10 @@ class Lookuper {
             console.warn(`Error loading config from ${confPath}, skipped: `, e.message);
             return;
         }
-        defaults(this.resultConfig, conf);
+        defaults(this.resultConfig, conf, !this.isMixedConfigs);
+        if (!this.isMixedConfigs) {
+            this.shouldExit = true;
+        }
     }
 }
 
