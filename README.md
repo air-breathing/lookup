@@ -1,4 +1,5 @@
 # lookup
+[![Build Status](https://travis-ci.org/air-breathing/lookup.svg?branch=master)](https://travis-ci.org/air-breathing/lookup)
 Tool for searching configs files and joining it or choosing more specified config.
 
 Using:
@@ -15,7 +16,9 @@ const result = lookuper.lookup();
 
 ```
 
-`configName` - String, name of config which we look up
+`configName` - String, name of config which we look up.
+
 `isMixedConfigs` - Boolean, configs should or not should be mixed.
-`parsingTyper` - String, have two values: `'json'` or `'js'`, by default it has `'js'` value
+
+`parsingTyper` - String, have two values: `'json'` or `'js'`, by default it has `'js'` value.
  
