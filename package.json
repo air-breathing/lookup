@@ -1,0 +1,36 @@
+{
+  "name": "config-lookuper",
+  "version": "1.0.0",
+  "description": "Tool for searching configs files and joining it or choosing more specified config.",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava -v ./test",
+    "lint": "eslint .",
+    "precommit": "npm run lint && npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/air-breathing/lookup.git"
+  },
+  "author": "Nadezhda Grin <grin.nadezhda@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/air-breathing/lookup/issues"
+  },
+  "homepage": "https://github.com/air-breathing/lookup#readme",
+  "dependencies": {
+    "lodash.defaults": "^4.2.0"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0",
+    "eslint": "^4.17.0",
+    "eslint-config-xo": "^0.20.0",
+    "husky": "^0.13.1",
+    "mocha": "^5.0.0",
+    "mock-fs": "^4.4.2",
+    "mock-require": "^3.0.1",
+    "mountfs": "^0.5.0",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.3.0"
+  }
+}
