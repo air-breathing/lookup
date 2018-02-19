@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/air-breathing/lookup#readme",
   "dependencies": {
-    "lodash.defaults": "^4.2.0"
+    "lodash.defaults": "^4.2.0",
+    "lodash.defaultsdeep": "^4.6.0"
   },
   "devDependencies": {
     "ava": "^0.25.0",

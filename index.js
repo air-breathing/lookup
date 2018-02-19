@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const defaults = require('lodash.defaults');
+const defaultsDeep = require('lodash.defaultsdeep');
 const parsingTypes = {
     JSON: 'json',
     JS: 'js'
@@ -53,7 +53,7 @@ class Lookuper {
             console.warn(`Error loading config from ${confPath}, skipped: `, e.message);
             return;
         }
-        defaults(this.resultConfig, conf, !this.isMixedConfigs);
+        defaultsDeep(this.resultConfig, conf);
         if (!this.isMixedConfigs) {
             this.shouldExit = true;
         }
