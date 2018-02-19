@@ -18,6 +18,9 @@
     "url": "https://github.com/air-breathing/lookup/issues"
   },
   "homepage": "https://github.com/air-breathing/lookup#readme",
+  "files": [
+    "index.js"
+  ],
   "dependencies": {
     "lodash.defaultsdeep": "^4.6.0"
   },
