@@ -1,6 +1,6 @@
 {
   "name": "config-lookuper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tool for searching configs files and joining it or choosing more specified config.",
   "main": "index.js",
   "scripts": {
