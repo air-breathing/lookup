@@ -1,7 +1,5 @@
-
 import test from 'ava';
 import proxyquire from 'proxyquire';
-import 'mock-fs';
 
 test('Check work with js without mixing', t => {
     const Lookuper = proxyquire('../index.js', {

@@ -1,7 +1,5 @@
-
 import test from 'ava';
 import proxyquire from 'proxyquire';
-import 'mock-fs';
 
 test.beforeEach(t => {
     t.context.Lookuper = proxyquire('../index.js', {
