@@ -79,7 +79,9 @@ test.beforeEach(t => {
 
 test('Check usual work of lookupNPM', t => {
     const lookuper = new t.context.Lookuper('some.config.js');
-    const actual = lookuper.lookupNPM('/user/soft/current-module', 'want-js-plugin.');
+    const actual = lookuper
+        .lookupNPM('/user/soft/current-module', 'want-js-plugin.')
+        .resultConfig;
     const expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
@@ -92,8 +94,10 @@ test('Check usual work of lookupNPM', t => {
 
 test('Check work lookupNPM and lookup together', t => {
     const lookuper = new t.context.Lookuper('some.config.js');
-    lookuper.lookup('/user/soft/current-module');
-    const actual = lookuper.lookupNPM('/user/soft/current-module', 'want-js-plugin.');
+    const actual = lookuper
+        .lookup('/user/soft/current-module')
+        .lookupNPM('/user/soft/current-module', 'want-js-plugin.')
+        .resultConfig;
     const expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,

@@ -20,7 +20,8 @@ class Lookuper {
     }
 
     lookup(dir) {
-        return this._lookup(dir);
+        this._lookup(dir);
+        return this;
     }
 
     /* Поиск по node_modules */
@@ -29,7 +30,8 @@ class Lookuper {
             throw new Error('Prefix is not an arguments');
         }
         this.prefix = prefix;
-        return this._searchPlugins(dir);
+        this._searchPlugins(dir);
+        return this;
     }
 
     _lookup(dir) {
@@ -40,7 +42,7 @@ class Lookuper {
         }
 
         if (dir === os.homedir() || dir === '/' || this.shouldExit) {
-            return this.resultConfig;
+            return;
         }
 
         return this._lookup(path.resolve(dir, '../'));
@@ -51,7 +53,7 @@ class Lookuper {
         if (files.includes(moduleDir)) {
             let moduleDirPath = path.resolve(dir, `./${moduleDir}`);
             files = Lookuper._readDir(moduleDirPath);
-            const plugins = files
+            files
                 .filter(fileName => {
                     return fileName.startsWith(this.prefix);
                 })
@@ -59,14 +61,14 @@ class Lookuper {
                     const currentPlaginPath = path.resolve(moduleDirPath, `./${fileName}`);
                     const pluginFiles = Lookuper._readDir(currentPlaginPath);
                     return pluginFiles.includes(this.configName);
+                })
+                .forEach(fileName => {
+                    this._mixConfig(path.join(moduleDirPath, `./${fileName}/${this.configName}`));
                 });
-            plugins.forEach(fileName => {
-                this._mixConfig(path.join(moduleDirPath, `./${fileName}/${this.configName}`));
-            });
         }
 
         if (dir === os.homedir() || dir === '/' || this.shouldExit) {
-            return this.resultConfig;
+            return;
         }
 
         return this._searchPlugins(path.resolve(dir, '../'));

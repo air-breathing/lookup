@@ -39,7 +39,9 @@ test('Check work with js without mixing', t => {
     });
 
     let lookuper = new Lookuper('some.config.js', false);
-    let actual = lookuper.lookup('/user/soft/common/current-module');
+    let actual = lookuper
+        .lookup('/user/soft/common/current-module')
+        .resultConfig;
     let expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
@@ -49,7 +51,9 @@ test('Check work with js without mixing', t => {
 
     lookuper = new Lookuper('some.config.js', true);
 
-    actual = lookuper.lookup('/user/soft/common/current-module');
+    actual = lookuper
+        .lookup('/user/soft/common/current-module')
+        .resultConfig;
     expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
@@ -105,7 +109,9 @@ test('Check work with js for deep search in object', t => {
     });
 
     let lookuper = new Lookuper('some.config.js', false);
-    let actual = lookuper.lookup('/user/soft/common/current-module');
+    let actual = lookuper
+        .lookup('/user/soft/common/current-module')
+        .resultConfig;
     let expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
@@ -119,7 +125,9 @@ test('Check work with js for deep search in object', t => {
 
     lookuper = new Lookuper('some.config.js', true);
 
-    actual = lookuper.lookup('/user/soft/common/current-module');
+    actual = lookuper
+        .lookup('/user/soft/common/current-module')
+        .resultConfig;
     expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
