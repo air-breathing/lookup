@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -7,6 +6,8 @@ const parsingTypes = {
     JSON: 'json',
     JS: 'js'
 };
+
+const moduleDir = 'node_modules';
 
 class Lookuper {
     constructor(configName, isMixedConfigs = true, fileType = parsingTypes.JS) {
@@ -19,26 +20,68 @@ class Lookuper {
     }
 
     lookup(dir) {
-        return this._lookup(dir);
+        this._lookup(dir);
+        return this;
+    }
+
+    /* Поиск по node_modules */
+    lookupNPM(dir, prefix) {
+        if (!prefix) {
+            throw new Error('Prefix is not an arguments');
+        }
+        this.prefix = prefix;
+        this._searchPlugins(dir);
+        return this;
     }
 
     _lookup(dir) {
-        let files;
-        try {
-            files = fs.readdirSync(dir);
-        } catch (e) {
-            console.warn(`Error readign directory ${dir}, skipped: `, e.message);
-            return this.resultConfig;
-        }
+        const files = Lookuper._readDir(dir);
+
         if (files.includes(this.configName)) {
             this._mixConfig(path.join(dir, this.configName));
         }
 
         if (dir === os.homedir() || dir === '/' || this.shouldExit) {
-            return this.resultConfig;
+            return;
         }
 
         return this._lookup(path.resolve(dir, '../'));
+    }
+
+    _searchPlugins(dir) {
+        let files = Lookuper._readDir(dir);
+        if (files.includes(moduleDir)) {
+            let moduleDirPath = path.resolve(dir, `./${moduleDir}`);
+            files = Lookuper._readDir(moduleDirPath);
+            files
+                .filter(fileName => {
+                    return fileName.startsWith(this.prefix);
+                })
+                .filter(fileName => {
+                    const currentPlaginPath = path.resolve(moduleDirPath, `./${fileName}`);
+                    const pluginFiles = Lookuper._readDir(currentPlaginPath);
+                    return pluginFiles.includes(this.configName);
+                })
+                .forEach(fileName => {
+                    this._mixConfig(path.join(moduleDirPath, `./${fileName}/${this.configName}`));
+                });
+        }
+
+        if (dir === os.homedir() || dir === '/' || this.shouldExit) {
+            return;
+        }
+
+        return this._searchPlugins(path.resolve(dir, '../'));
+    }
+
+    static _readDir(dir) {
+        let files = [];
+        try {
+            files = fs.readdirSync(dir);
+        } catch (e) {
+            console.warn(`Error reading directory ${dir}, skipped: `, e.message);
+        }
+        return files;
     }
 
     _mixConfig(confPath) {

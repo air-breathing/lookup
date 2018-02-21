@@ -1,7 +1,5 @@
-
 import test from 'ava';
 import proxyquire from 'proxyquire';
-import 'mock-fs';
 
 test.beforeEach(t => {
     t.context.Lookuper = proxyquire('../index.js', {
@@ -50,7 +48,9 @@ test.beforeEach(t => {
 
 test('Check default work', t => {
     const lookuper = new t.context.Lookuper('some.config.js');
-    const actual = lookuper.lookup('/user/soft/current-module');
+    const actual = lookuper
+        .lookup('/user/soft/current-module')
+        .resultConfig;
     const expected = {
         '@runtimeGlobal': true,
         '@noCallThru': true,
@@ -61,7 +61,9 @@ test('Check default work', t => {
 
 test('Check work with json', t => {
     const lookuper = new t.context.Lookuper('some.config.js', true, 'json');
-    const actual = lookuper.lookup('/user/soft/current-module');
+    const actual = lookuper
+        .lookup('/user/soft/current-module')
+        .resultConfig;
     const expected = {
         data: 1
     };
