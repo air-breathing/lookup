@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const util = require('util');
+const childProcess = require('child_process');
+const exec = util.promisify(childProcess.exec);
 const defaultsDeep = require('lodash.defaultsdeep');
 const parsingTypes = {
     JSON: 'json',
@@ -26,12 +29,28 @@ class Lookuper {
 
     /* Поиск по node_modules */
     lookupNPM(dir, prefix) {
+        this._setPrefix(prefix);
+        this._searchPlugins(dir);
+        return this;
+    }
+
+    async lookupGlobalModules(prefix) {
+        this._setPrefix(prefix);
+        const pathToGlobalModules = await Lookuper._getPathToGlobalModules();
+        this._searchPluginsInCurrentNodeModules(pathToGlobalModules);
+        return this;
+    }
+
+    _setPrefix(prefix) {
         if (!prefix) {
             throw new Error('Prefix is not an arguments');
         }
         this.prefix = prefix;
-        this._searchPlugins(dir);
-        return this;
+    }
+
+    static async _getPathToGlobalModules() {
+        const { stdout } = await exec('npm config get prefix');
+        return `${(stdout || '').trim()}/lib/node_modules`;
     }
 
     _lookup(dir) {
@@ -48,23 +67,27 @@ class Lookuper {
         return this._lookup(path.resolve(dir, '../'));
     }
 
+    _searchPluginsInCurrentNodeModules(moduleDirPath) {
+        const files = Lookuper._readDir(moduleDirPath);
+        files
+            .filter(fileName => {
+                return fileName.startsWith(this.prefix);
+            })
+            .filter(fileName => {
+                const currentPluginPath = path.resolve(moduleDirPath, `./${fileName}`);
+                const pluginFiles = Lookuper._readDir(currentPluginPath);
+                return pluginFiles.includes(this.configName);
+            })
+            .forEach(fileName => {
+                this._mixConfig(path.join(moduleDirPath, `./${fileName}/${this.configName}`));
+            });
+    }
+
     _searchPlugins(dir) {
         let files = Lookuper._readDir(dir);
         if (files.includes(moduleDir)) {
             let moduleDirPath = path.resolve(dir, `./${moduleDir}`);
-            files = Lookuper._readDir(moduleDirPath);
-            files
-                .filter(fileName => {
-                    return fileName.startsWith(this.prefix);
-                })
-                .filter(fileName => {
-                    const currentPlaginPath = path.resolve(moduleDirPath, `./${fileName}`);
-                    const pluginFiles = Lookuper._readDir(currentPlaginPath);
-                    return pluginFiles.includes(this.configName);
-                })
-                .forEach(fileName => {
-                    this._mixConfig(path.join(moduleDirPath, `./${fileName}/${this.configName}`));
-                });
+            this._searchPluginsInCurrentNodeModules(moduleDirPath);
         }
 
         if (dir === os.homedir() || dir === '/' || this.shouldExit) {
