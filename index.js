@@ -13,17 +13,34 @@ const parsingTypes = {
 const moduleDir = 'node_modules';
 
 class Lookuper {
-    constructor(configName, isMixedConfigs = true, fileType = parsingTypes.JS) {
+    constructor(configName, isMixedConfigs = true) {
         // TODO: сделать не только строку, но и массив, нужно ли?
+        const fileType = configName.split('.').pop();
+
         this.configName = configName;
         this.isMixedConfigs = isMixedConfigs;
         this.fileType = parsingTypes[fileType.toUpperCase()];
         this.resultConfig = {};
         this.shouldExit = false;
+        if (!this.fileType) {
+            console.warn(`Type of file ${fileType} is not supported`);
+        }
     }
 
     lookup(dir) {
         this._lookup(dir);
+        return this;
+    }
+
+    // Без рекурсии, если это нужно, можно добавить.
+    lookupPackage(dir, packagePropName) {
+        const files = Lookuper._readDir(dir);
+        if (files.includes('package.json')) {
+            const packageJSON = JSON.parse(fs.readFileSync(path.join(dir, `./package.json`), 'utf8'));
+            const conf = packageJSON[packagePropName];
+            this._setNewResult(conf);
+        }
+
         return this;
     }
 
@@ -119,6 +136,10 @@ class Lookuper {
             console.warn(`Error loading config from ${confPath}, skipped: `, e.message);
             return;
         }
+        this._setNewResult(conf);
+    }
+
+    _setNewResult(conf) {
         defaultsDeep(this.resultConfig, conf);
         if (!this.isMixedConfigs) {
             this.shouldExit = true;
