@@ -7,7 +7,7 @@ test.beforeEach(t => {
             readdirSync: path => {
                 switch (path) {
                     case '/user/soft/current-module': {
-                        return ['some.config.js', 'index.js', 'test.js', 'some.config.json'];
+                        return ['package.json'];
                     } case '/user/soft/': {
                         return [];
                     } case '/user': {
@@ -19,46 +19,25 @@ test.beforeEach(t => {
             },
             readFileSync: data => {
                 switch (data) {
-                    case '/user/some.config.json': {
+                    case '/user/soft/current-module/package.json': {
                         return `{
-                            "data": 1
+                            "configData": {
+                                "data": 1
+                            }
                         }`;
                     } default: {
                         return '{}';
                     }
                 }
             }
-        },
-        '/user/soft/current-module/some.config.js': {
-            '@runtimeGlobal': true,
-            '@noCallThru': true,
-            data: 1
-        },
-        '/user/some.config.js': {
-            '@runtimeGlobal': true,
-            '@noCallThru': true,
-            data: 2
         }
     });
 });
 
-test('Check default work', t => {
+test('Check lookup in package.json', t => {
     const lookuper = new t.context.Lookuper('some.config.js');
     const actual = lookuper
-        .lookup('/user/soft/current-module')
-        .resultConfig;
-    const expected = {
-        '@runtimeGlobal': true,
-        '@noCallThru': true,
-        data: 1
-    };
-    t.deepEqual(actual, expected);
-});
-
-test('Check work with json', t => {
-    const lookuper = new t.context.Lookuper('some.config.json', true);
-    const actual = lookuper
-        .lookup('/user/soft/current-module')
+        .lookupPackage('/user/soft/current-module', 'configData')
         .resultConfig;
     const expected = {
         data: 1
